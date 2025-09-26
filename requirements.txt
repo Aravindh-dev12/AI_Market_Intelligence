@@ -1,0 +1,10 @@
+pandas
+numpy
+requests
+fuzzywuzzy
+python-Levenshtein
+openai
+python-dotenv
+markdown2
+pdfkit
+streamlit
