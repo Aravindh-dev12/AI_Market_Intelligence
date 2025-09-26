@@ -1,7 +1,6 @@
 import json
 
 def generate_markdown_report(insights_path="insights/insights.json"):
-
     with open(insights_path, "r") as f:
         insights = json.load(f)
 
