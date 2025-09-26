@@ -1,40 +1,31 @@
-import pandas as pd
+from src.data_pipeline import clean_google_play, load_d2c_excel
+from src.api_integration import merge_google_apple
+from src.llm_insights import generate_insights
+from src.report_generator import generate_markdown_report
+from src.streamlit_app import analyze_d2c_funnel
 
-def analyze_d2c_funnel(excel_dict):
-    funnel_sheet = None
-    seo_sheet = None
+def main():
+    print("Cleaning Google Play data...")
+    google_df = clean_google_play("data/GooglePlayStore.csv")
 
-    for sheet in excel_dict:
-        if "ad" in sheet.lower() or "campaign" in sheet.lower():
-            funnel_sheet = sheet
-        if "seo" in sheet.lower():
-            seo_sheet = sheet
+    print("Merging with Apple App Store data...")
+    combined_df = merge_google_apple(google_df)
 
-    if not funnel_sheet:
-        print("⚠️ 'Ad Campaign Metrics' sheet not found, using first sheet as funnel data")
-        funnel_sheet = list(excel_dict.keys())[0]
+    print("Generating LLM insights...")
+    insights = generate_insights(combined_df)
 
-    if not seo_sheet:
-        print("⚠️ 'SEO Metrics' sheet not found, skipping SEO analysis")
-        seo_sheet = None
+    print("Generating report...")
+    generate_markdown_report()
 
-    funnel_df = excel_dict[funnel_sheet]
+    print("Loading D2C dataset for Phase 5...")
+    d2c_data = load_d2c_excel("data/Kasparro_Phase5_D2C_Synthetic_Dataset.xlsx")
 
-    funnel_summary = pd.DataFrame({
-        "Campaign": funnel_df.get("Campaign", funnel_df.columns[0:1][0]),
-        "Spend": funnel_df.get("Spend", [0]*len(funnel_df)),
-        "Revenue": funnel_df.get("Revenue", [0]*len(funnel_df)),
-        "ROAS": [r/s if s else 0 for r, s in zip(funnel_df.get("Revenue", [0]*len(funnel_df)),
-                                                 funnel_df.get("Spend", [1]*len(funnel_df)))]
-    })
+    print("Analyzing D2C funnel and generating creative outputs...")
+    funnel, creative_outputs = analyze_d2c_funnel(d2c_data)
 
-    creative_outputs = []
-    for i, row in funnel_df.head(3).iterrows():
-        campaign_name = row.get("Campaign", f"Campaign {i+1}")
-        creative_outputs.append({
-            "headline": f"Boost your {campaign_name} now!",
-            "seo_meta": f"{campaign_name} with high conversion rate",
-            "pdp_text": f"Maximize ROI for {campaign_name} campaign."
-        })
+    print("✅ Process complete!")
+    print("Funnel Insights:\n", funnel.head())
+    print("Creative Outputs:\n", creative_outputs)
 
-    return funnel_summary, creative_outputs
+if __name__ == "__main__":
+    main()
