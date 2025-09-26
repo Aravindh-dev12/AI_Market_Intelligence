@@ -1,13 +1,13 @@
+import streamlit as st
 import json
 
-def run_cli():
-    with open("insights/insights.json") as f:
-        insights = json.load(f)
+with open("insights/insights.json") as f:
+    insights = json.load(f)
 
-    print("AI Market Intelligence CLI\n")
-    for i, item in enumerate(insights, 1):
-        print(f"{i}. {item['insight']} (Confidence: {item['confidence']})")
+st.title("AI Market Intelligence Dashboard")
+index = st.selectbox("Select Insight", range(len(insights)))
 
-    choice = int(input("Enter insight number for details: "))
-    selected = insights[choice-1]
-    print(f"Recommendation: {selected['recommendation']}")
+item = insights[index]
+st.write(f"**Insight:** {item['insight']}")
+st.write(f"**Confidence:** {item['confidence']}")
+st.write(f"**Recommendation:** {item['recommendation']}")
