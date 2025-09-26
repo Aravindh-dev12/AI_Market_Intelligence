@@ -70,7 +70,9 @@ Add your API keys to .env:
 
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxx
 RAPIDAPI_KEY=your_rapidapi_key_here
-
+RAPIDAPI_HOST=
+COUNTRY=us
+LANG=en
 
 Run the main script:
 
@@ -92,5 +94,6 @@ Notes
 If D2C Excel sheets don’t match expected names, the first sheet is used as fallback.
 
 Funnel metrics and creative outputs are generated even with minimal data.
+
 
 Markdown report is fully automated; PDF export is optional.
